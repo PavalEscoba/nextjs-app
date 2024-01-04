@@ -1,36 +1,15 @@
-import { redirect } from 'next/navigation';
-import prisma from '@/db';
+'use client';
+import { useFormState } from 'react-dom';
+import * as actions from '@/actions';
 
 export default function SnippetCreatePage() {
+  const formStateInitial = { message: '' };
+  const [formState, action] = useFormState(
+    actions.createSnippet,
+    formStateInitial
+  );
 
-  async function createSnippet(formData: FormData) {
-    "use server"
-    
-    const title = formData.get('title') as string;
-    const code = formData.get('code') as string;
-    
-    const snippet = await prisma.snippet.create({
-      data:{
-        title,
-        code,
-      }
-    });
-
-    redirect('/');
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // code shows how that was made initially
   // async function createSnippet(formData: FormData) {
   //   'use server';
   //   const title = formData.get('title') as string;
@@ -48,7 +27,7 @@ export default function SnippetCreatePage() {
   //   redirect('/');
   // }
   return (
-    <form action={createSnippet}>
+    <form action={action}>
       <h1 className="font-bold text-2xl my-3">Create a new snippet</h1>
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
@@ -70,6 +49,11 @@ export default function SnippetCreatePage() {
             name="code"
           />
         </div>
+        {formState.message ? (
+          <p className="self-start my-2 p-2 border rounded bg-red-200 border-red-600 ">
+            {formState.message}
+          </p>
+        ) : null}
         <button className="rounded p-2 bg-blue-200 w-full" type="submit">
           Create
         </button>
